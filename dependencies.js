@@ -1,27 +1,92 @@
+// Player class to keep track of player information
+window.player = window.classes.player =
+class player 
+{
+  constructor(x,y,mass)
+  {
+    this.position = {x: x, y: y};
+    this.velocity = {x: 0, y: 0};
+    this.mass = mass;
+
+    // THIS IS FOR COLLISIONS. It is 0.3 because in main-scene.js I scale by 0.3 
+    this.w = 0.6;
+    this.h = 0.6;
+
+  }
+}
+
+// Platform for simple_stage
 window.platform = window.classes.platform =
 class platform extends Shape   
 { constructor()  
     { super( "positions", "normals", "texture_coords" );
 
-      var thin_platform_transform = Mat4.scale([4,0.05,1]);
+      var thin_platform_transform = Mat4.scale([1/2,0.05,1]);                     // Create a 1x0.1x1 platform
       Cube.insert_transformed_copy_into( this, [], thin_platform_transform );
     }
 }
 
+// Simplistic stage
 window.simple_stage = window.classes.simple_stage =
 class simple_stage extends Shape   
-{ constructor()  
+{ 
+  constructor()  
     { super( "positions", "normals", "texture_coords" );
 
       var model_transform = Mat4.identity();
-      platform.insert_transformed_copy_into( this, [], model_transform );
+
+      // Create main platform
+      model_transform = model_transform.times(Mat4.scale([8,1,1]));
+      platform.insert_transformed_copy_into( this, [], model_transform);
 
       // Add two more platforms
-      model_transform = Mat4.translation([2.5,1.5,0]).times(Mat4.scale([1/4,1,1]));
+      model_transform = Mat4.translation([2.5,1.5,0]).times(Mat4.scale([2,1,1]));
+      platform.insert_transformed_copy_into( this, [], model_transform );
+      model_transform = Mat4.translation([-2.5,1.5,0]).times(Mat4.scale([2,1,1]));
       platform.insert_transformed_copy_into( this, [], model_transform );
 
-      model_transform = Mat4.translation([-2.5,1.5,0]).times(Mat4.scale([1/4,1,1]));
-      platform.insert_transformed_copy_into( this, [], model_transform );      
+      // THIS IS FOR COLLISIONS
+      // Numbers come from the above transforms
+      this.platforms = {
+        main_platform: {
+          x: 0,
+          y: 0,
+          w: 8, 
+          h: 0.1
+        },
+        upper_left_platform: {
+          x: -2.5,
+          y: 1.5,
+          w: 2,   
+          h: 0.1          
+        },
+        upper_right_platform: {
+          x: 2.5,
+          y: 1.5,
+          w: 2,
+          h: 0.1          
+      }   
+    }
+    }
+  
+    // Check for collisions with a players
+    // Currently, player is assumed to be a cube. 
+    // VERY SIMPLE.
+    // (1) Only checks for collision with top edge of main platform
+    // (2) Need to check for collisions for the smaller two platforms 
+    check_for_collisions(player)
+    {
+      var main_platform_top_edge = this.platforms.main_platform.y+this.platforms.main_platform.h/2
+
+      // Calculate distance between player and top edge of stage
+      var distY = Math.abs(player.position.y - main_platform_top_edge);
+
+      // Collision!
+      if(distY <= (player.h/2 + this.platforms.main_platform.h/2)) 
+        return true;
+
+      // Default to no collision
+      return false;
     }
 }
 
