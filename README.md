@@ -1,6 +1,6 @@
 # Kernel Panic
 
-Repository for Term Project for CS 174A for UCLA. 
+Term Project for CS 174A for UCLA. 
 
 ## Team Members
 
