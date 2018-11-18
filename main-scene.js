@@ -17,7 +17,7 @@ class Main_Scene extends Scene_Component
         context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,2,7 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
 
         //This camera is good for debugging collisions
-        //context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,-1,7 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
+        //context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,0,7 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
 
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
