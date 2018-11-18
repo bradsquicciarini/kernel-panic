@@ -13,4 +13,4 @@ Zach Rash: 504619571, zachrash@ucla.edu
 
 ## Current Status
 
-Collision detect between "players" (aka two pink cubes) and the main platform.
+Collision detection between "players" (aka two pink cubes) and the main platform in the y direction
