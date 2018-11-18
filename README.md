@@ -18,12 +18,14 @@ Collision detection between "players" (aka two pink cubes) and the main platform
 ## What needs to be done 
 
 I think it would be sick if we eventually made the stage look like Corneria. We could definitely make it look 
-really good with texture mapping and such, but for right now I think this would be the best order of progression:
+really good with texture mapping and such.
+
+However, for right now, I think this would be the best order of progression:
 
 * [x] Gravity and collision detection with main platform
 * [ ] Collision detection for all platforms in all directions (x and y)
 * [ ] Movement control for players
-* [ ] Add a melee and projectile attack for players* [ ] Add background
+* [ ] Add a melee and projectile attack for players
 * [ ] Draw players. (This would include arms that move for strikes. Scene graphs?) 
 * [ ] Add background, texture mapping to platforms (Make it look pretty)
 * [ ] Make Corneria!!!!
