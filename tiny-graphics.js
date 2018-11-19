@@ -609,7 +609,7 @@ class Canvas_Widget                    // Canvas_Widget embeds a WebGL demo onto
     }
   populate_canvas( element, scenes, show_controls )   // Assign a Webgl_Manager to the WebGL canvas.
     { if( !scenes.every( x => window[ x ] ) )         // Make sure each scene class really exists.
-        throw "(Featured class not found)";
+         throw "(Featured class not found)";
       const canvas = element.appendChild( document.createElement( "canvas" ) );
       const control_panels = element.appendChild( document.createElement( "table" ) );
       control_panels.className = "control-box";      
