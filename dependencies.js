@@ -1,20 +1,25 @@
 // Player class to keep track of player information
 window.player = window.classes.player =
-class player 
+class player extends Shape
 {
-  constructor(x,y)
-  {
+  constructor(x,y,dx=0,dy=0)
+  { 
+  super( "positions", "normals", "texture_coords" );
     // Physics variables
     this.Fx = 0;                  // Force in x
     this.Fy = 0;                  // Force in y
     this.position = {x: x, y: y};
-    this.velocity = {x: 0, y: 0};
+    this.velocity = {x: dx, y: dy};
 
     this.jumped = false;          // Avoid double jumps
 
     // THIS IS FOR COLLISIONS. It is 0.3 because in main-scene.js I scale by 0.3 
     this.w = 0.6;
     this.h = 0.6;
+
+    // color
+    this.color = Color.of(1,1,1,1);
+
   }
 }
 
@@ -56,20 +61,31 @@ class simple_stage extends Shape
           y: -2,
           w: 8, 
           h: 0.1
-        },
-        upper_left_platform: {
+        }
+        };
+       
+     this.platforms['upper_left_platform'] = {
           x: -2.5,
-          y: 1.5,
+          y: this.platforms.main_platform.y + 1.5,
           w: 2,   
           h: 0.1          
-        },
-        upper_right_platform: {
-          x: 2.5,
-          y: 1.5,
-          w: 2,
-          h: 0.1          
-      }   
-    }
+        };
+     
+     this.platforms['upper_right_platform'] = {
+        x: -2.5,
+        y: this.platforms.main_platform.y + 1.5,
+        w: 2,   
+        h: 0.1          
+      };
+
+
+     this.platforms['upper_right_platform'] = {
+        x: 2.5,
+        y: this.platforms.main_platform.y + 1.5,
+        w: 2,   
+        h: 0.1          
+      };
+
     }
 
     // Check for collisions with a players
@@ -85,12 +101,14 @@ class simple_stage extends Shape
       if (distX > (platform.w/2 + player.w/2)) return false;
       if (distY > (platform.h/2 + player.h/2)) return false;
 
-      // Collision!
-      if ((distY <= platform.h/2 + player.h/2) && (distX <= player.w/2 + platform.w/2)) return true;
-
-      // Allow player to jump through smaller platforms
+     // Allow player to jump up through platforms
       if (player.velocity.y > 0) 
         return false;
+
+      // Collision!
+      if ((distY <= platform.h/2 + player.h/2) && 
+          (distX <= player.w/2 + platform.w/2)) 
+        return true;
 
       // Default to no collision
       return false;
@@ -98,12 +116,13 @@ class simple_stage extends Shape
 
      check_for_collisions(player)
     {
-      var collision = this.collisions_helper(this.platforms.main_platform, player);
+      // Terminate early if we find a collision
 
-      // Attempting to add collision logic for other two platforms
-//      collision = collision || this.collisions_helper(this.platforms.upper_left_platform, player);
-//      collision = collision || this.collisions_helper(this.platforms.upper_right_platform, player);
-      return collision;
+      // Check stage
+      if(this.collisions_helper(this.platforms.main_platform, player)) return true;
+      if(this.collisions_helper(this.platforms.upper_left_platform, player)) return true;
+      if(this.collisions_helper(this.platforms.upper_right_platform, player)) return true;      
+      return false;
     }
 
 }

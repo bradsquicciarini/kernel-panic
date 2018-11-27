@@ -11,11 +11,12 @@ class Main_Scene extends Scene_Component
   { constructor( context, control_box )
       { super(   context, control_box );
 
-         // This camera looks good
-        context.globals.graphics_state.camera_transform = Mat4.translation([0,-1.5,0]).times(Mat4.look_at( Vec.of( 0,0,7 ), Vec.of( 0,-2,0 ), Vec.of( 0,1,0 ) ));
+        //context.globals.graphics_state.camera_transform = Mat4.translation([0,-1.5,0]).times(Mat4.look_at( Vec.of( 0,0,7 ), Vec.of( 0,-2,0 ), Vec.of( 0,1,0 ) ));
 
         //This camera is good for debugging collisions
-        //context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,0,7 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
+       // context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( -2.5,-1.5,7 ), Vec.of( -2.5,1.5,0 ), Vec.of( 0,1,0 ) );
+     // This camera looks good
+        context.globals.graphics_state.camera_transform = Mat4.look_at( Vec.of( 0,0,7 ), Vec.of( 0,0,0 ), Vec.of( 0,1,0 ) );
 
         const r = context.width/context.height;
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
@@ -30,7 +31,7 @@ class Main_Scene extends Scene_Component
         this.materials =
           { 
             white: context.get_instance( Phong_Shader ).material( Color.of( 1,1,1,1 ) ),
-            pink: context.get_instance( Phong_Shader ).material( Color.of( 255/255, 175/255, 175/255, 1 ) )
+            player: context.get_instance( Phong_Shader ).material( Color.of( 255/255, 175/255, 175/255, 1 ) )
           }
 
         this.lights = [ new Light( Vec.of( -5,5,5,1 ), Color.of( 0,1,1,1 ), 100000 ) ];
@@ -38,7 +39,12 @@ class Main_Scene extends Scene_Component
         // Create two players
         this.players = [new player(-2,1),
                         new player(2,1)];
+            
+        this.players[0].color = Color.of( 255/255, 175/255, 175/255, 1 );
+        this.players[1].color = Color.of( 70/255, 175/255, 175/255, 1 );
 
+
+      // TODO: Put this in dependencies to clean up?
       document.addEventListener( "keydown",   e => 
       {
         // Do nothing if the event was already processed
@@ -47,7 +53,7 @@ class Main_Scene extends Scene_Component
         if (e.key == 'a')
         {
             // Limit x velocity from keyboard input
-            if(this.players[0].velocity.x < MAX_X_VELOCITY) 
+            if(this.players[0].velocity.x < -MAX_X_VELOCITY) 
                   return;
 
             this.players[0].Fx -= 20;
@@ -117,9 +123,16 @@ class Main_Scene extends Scene_Component
       }
     display( graphics_state )
       { graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
-        const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
+       
+       // TODO: Comment for real timer 
+       // const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
+
+       // For debugging, so animation does not jump between breakpoints
+        const dt = 1.5 / 100;
 
         var model_transform =  Mat4.identity();
+
+        var collision_color = Color.of( 255/255, 175/255, 175/255, 1 );
 
         // Draw stage
         model_transform = model_transform.times(Mat4.translation([0,-2,0]));
@@ -137,7 +150,14 @@ class Main_Scene extends Scene_Component
             // Create a buffer to calculate next state. Currently only for y, but will extend for x
             var dy_buffer = this.players[i].velocity.y + ay*dt;
             var y_buffer = this.players[i].position.y + dy_buffer*dt;
-            var player_buffer = new player(this.players[i].position.x, y_buffer)
+
+            // TODO: Change this so we do not generate a player object
+            // When we make players out of objects other than cubes this will be extremely slow
+            // as it is called ~ 60 Hz
+            var player_buffer = new player(this.players[i].position.x, 
+                                           y_buffer,
+                                           this.players[i].position.dx,
+                                           dy_buffer);
 
             // If there is no collision, update position
             if(!this.shapes.stage.check_for_collisions(player_buffer))
@@ -148,7 +168,14 @@ class Main_Scene extends Scene_Component
             // Handle collision
             else
             {
+               // Indicates collision
+               collision_color = Color.of( 90/255, 175/255, 175/255, 1 );
+
               // Handle collision with stage
+              // TODO: Because of the player_buffer, this will set the player's velocity 
+              // to zero before it actually hits it. Then gravity will move it a little, and
+              // the cycle repeats, until it converges. 
+              // Probably not the best way to do this, but defintely the easiest.
                this.players[i].velocity.y = 0;  // Velocity in y direction is now 0
                this.players[i].jumped = false;  // Reset jump flag
             }
@@ -170,7 +197,7 @@ class Main_Scene extends Scene_Component
 
             model_transform = model_transform.times(update_player)                            // Move to player to translated position
                                            .times(Mat4.scale([scale,scale,scale]));         // Scale down
-            this.shapes.test_box.draw(graphics_state, model_transform, this.materials.pink);
+            this.shapes.test_box.draw(graphics_state, model_transform, this.materials.player.override({color: this.players[i].color}));
             model_transform = model_transform.times(Mat4.scale([1/scale,1/scale,1/scale]))    // Undo scale
                                            .times(undo_update_player);                      // Undo translation
         }
