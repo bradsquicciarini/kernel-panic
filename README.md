@@ -4,7 +4,7 @@ Term Project for CS 174A for UCLA.
 
 ## Team Members
 
-Brad Squicciarini: 404561839, Email: bsquicciarini@ucla.edu
+Brad Squicciarini: 404561839, bsquicciarini@ucla.edu
 
 Jonathan Schultz: 104941879, jonathanaschultz1@gmail.com 
 
@@ -30,5 +30,3 @@ However, for right now, I think this would be the best order of progression:
 * [ ] Draw players. (This would include arms that move for strikes. Scene graphs?) 
 * [ ] Add background, texture mapping to platforms (Make it look pretty)
 * [ ] Make Corneria!!!!
-
-Just suggestions! Not strict guidelines.
