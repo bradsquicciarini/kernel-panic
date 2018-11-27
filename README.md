@@ -24,8 +24,9 @@ However, for right now, I think this would be the best order of progression:
 
 * [x] Gravity and collision detection with main platform
 * [x] Movement control for players
-* [x] Collision detection for all platforms in y directions
-* [ ] Collision detection in x direction 
+* [x] Collision detection b/t players and platforms in y directions
+* [ ] Collision detection b/t players and platforms in x direction 
+* [ ] Collision detection between players
 * [ ] Add a melee and projectile attack for players
 * [ ] Draw players. (This would include arms that move for strikes. Scene graphs?) 
 * [ ] Add background, texture mapping to platforms (Make it look pretty)
